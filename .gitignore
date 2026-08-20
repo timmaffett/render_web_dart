@@ -1,0 +1,6 @@
+.dart_tool/
+pubspec.lock
+# The AOT binary is built in the image, never committed.
+server
+.DS_Store
+*.log

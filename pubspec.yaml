@@ -1,0 +1,7 @@
+name: render_web_dart
+description: The same web service as render_web_node, in Dart compiled AOT.
+publish_to: none
+version: 0.1.0
+
+environment:
+  sdk: ^3.9.0

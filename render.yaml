@@ -1,0 +1,12 @@
+# One-click deploy: https://render.com/deploy?repo=https://github.com/timmaffett/render_web_dart
+#
+# Render has no Dart runtime, so this is `runtime: docker` — the Dockerfile
+# compiles the binary. Same `plan` as the Node twin, deliberately: the two exist
+# to be compared, and a different instance size would make every number useless.
+services:
+  - type: web
+    name: render-web-dart
+    runtime: docker
+    plan: free
+    dockerfilePath: ./Dockerfile
+    healthCheckPath: /health
