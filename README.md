@@ -26,13 +26,40 @@ Render's own metrics compare them — which is the point of having two.
 `/work` exists to move the CPU graph. It is deliberately the least efficient way
 to compute a Fibonacci number, and identical in both services.
 
+Live, on the free plan:
+
 ```console
 $ curl -s https://render-web-dart.onrender.com/ | jq -c
-{"runtime":"dart","version":"3.13.0","uptimeSeconds":41,"requests":3,...}
-
-$ curl -s 'https://render-web-dart.onrender.com/work?n=32' | jq -c
-{"runtime":"dart","n":32,"value":2178309,"ms":29.1}
+{"runtime":"dart","version":"3.9.4","uptimeSeconds":10,"requests":6,
+ "hostname":"srv-da3lugu7bikc73b9tgfg-...","processors":8,"memoryMb":7}
 ```
+
+## Measured against the Node twin
+
+Both on `free`, in `oregon`, called from the same laptop, best of seven — a free
+instance shares a CPU, so the slow samples are the neighbours rather than the
+runtime.
+
+| `fib(n)` | Dart AOT | Node | |
+| ---: | ---: | ---: | --- |
+| 30 | 6.0 ms | 8.9 ms | 1.5x |
+| 32 | 15.8 ms | 24.9 ms | 1.6x |
+| 34 | 129.9 ms | 318.4 ms | 2.5x |
+| 36 | 647.2 ms | 930.3 ms | 1.4x |
+
+Resident memory, idle: **7 MB against 51 MB**.
+
+**Anecdotal — one workload, one afternoon, two free instances.** Recursive
+`fib` is integer arithmetic and function calls and nothing else; it says
+nothing about JSON, I/O or anything a real service spends its time on. Re-run
+it rather than trusting it, which is why the endpoint returns its own timing.
+
+Worth noting against the numbers in
+[`render-dart`](https://github.com/timmaffett/render-dart), where V8 *matched*
+Dart AOT on the same recursion. That comparison was dart2js against a native
+task spawned per call, and the process hop was most of the difference. Here both
+servers are long-lived, so nothing is being spawned and the arithmetic is all
+that is left.
 
 ## Deploy
 
